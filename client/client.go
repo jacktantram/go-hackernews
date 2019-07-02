@@ -1,7 +1,16 @@
 package client
 
+import (
+	"github.com/gocolly/colly"
+)
+
 type HNClient struct {
 	BaseURL string
+}
+
+func NewHNClient() HNClient {
+	c := colly.NewCollector()
+
 }
 
 type Item struct {
