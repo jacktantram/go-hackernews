@@ -1,15 +1,28 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
 	"fmt"
 
 	"github.com/go-hackernews/client"
 )
 
 func main() {
+	var posts = flag.Int("posts", 1, "how many posts to print on hackernews")
+	flag.Parse()
 	client := client.NewHNClient()
-	pp, _ := client.GetTopStories(101)
+	pp, err := client.GetTopStories(*posts)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	fmt.Println(fmt.Sprintf("%v", pp))
+	bytes, err := json.Marshal(pp)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(string(bytes))
 
 }

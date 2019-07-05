@@ -29,35 +29,47 @@ func (s HNScraper) ScrapeHNFeed(maxItems int) (*[]feed.Item, error) {
 	pageNum := 1
 	currentTotal := 0
 	prevTotal := 0
+	shouldBreak := false
 
-	s.c.OnHTML("#hnmain .itemlist .athing", func(e *colly.HTMLElement) {
+	for {
+		s.c.OnHTML("#hnmain .itemlist .athing", func(e *colly.HTMLElement) {
 
-		if currentTotal == maxItems {
-			return
+			if currentTotal == maxItems {
+				return
+			}
+			Item, err := processFeedItem(e)
+			if err != nil {
+				// log error, or write to file
+				fmt.Println(err)
+			} else {
+				allItems = append(allItems, *Item)
+				currentTotal++
+
+			}
+		})
+
+		s.c.OnScraped(func(*colly.Response) {
+			if len(allItems) != maxItems {
+				pageNum++
+			}
+			prevTotal = currentTotal
+
+		})
+
+		s.c.Visit(fmt.Sprintf("%s/news?p=%d", s.baseURL, pageNum))
+		if shouldBreak {
+			break
+
+		} else if currentTotal == prevTotal {
+			shouldBreak = true
 		}
-		Item, err := processFeedItem(e)
-		if err != nil {
-			// log error, or write to file
-			fmt.Println(err)
-		} else {
-			allItems = append(allItems, *Item)
-			currentTotal++
-
-		}
-	})
-	if len(allItems) != maxItems {
-		pageNum++
-		//in case there isn't more pages or the value isn't updating
-	} else if currentTotal == prevTotal {
-		return &allItems, nil
 	}
-	prevTotal = currentTotal
-	s.c.Visit(fmt.Sprintf("%s/news?p=%d", s.baseURL, pageNum))
-
 	if len(allItems) == 0 {
 		return nil, errors.New("No feed items found")
 	}
+
 	return &allItems, nil
+
 }
 
 //processFeedItem extracts the current html element and tries to create a feed Item
@@ -71,7 +83,8 @@ func processFeedItem(e *colly.HTMLElement) (*feed.Item, error) {
 	if err != nil {
 		return nil, fmt.Errorf("rank expected to be integer, got %s", rank)
 	}
-	title := e.ChildText(".title a")
+
+	title := e.ChildText(".storylink")
 	link := e.ChildAttr(".title a", "href")
 
 	metaDataRow := e.DOM.Next()
@@ -81,7 +94,7 @@ func processFeedItem(e *colly.HTMLElement) (*feed.Item, error) {
 	score := strings.TrimSpace(strings.Replace(metaDataRow.Find(".score").Text(), "points", "", -1))
 	scoreI, err := strconv.Atoi(score)
 	if err != nil {
-		return nil, fmt.Errorf("score expected to be integer, got %s", score)
+		scoreI = 0
 	}
 	author := metaDataRow.Find(".hnuser").Text()
 	var comments string
@@ -94,7 +107,7 @@ func processFeedItem(e *colly.HTMLElement) (*feed.Item, error) {
 	}))
 	commentsI, err := strconv.Atoi(comments)
 	if err != nil {
-		return nil, fmt.Errorf("comments expected to be integer, got %s", comments)
+		commentsI = 0
 	}
 	feedItem, err := feed.NewItem(title, link, author, scoreI, commentsI, rankI)
 	return &feedItem, err
