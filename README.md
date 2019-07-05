@@ -19,7 +19,10 @@ The application can be executed by running the following command (assuming the d
 ```
 docker run hackernews --posts n  //n being a positive integer between 1-100
 ```
-This should then output the posts to the terminal
+This should then output the posts to the terminal:
+```
+[{"title":"Is this Paypal experience customary?","uri":"https://gist.github.com/stratosgear/6923623321adacd368e965ff193fe2ce","author":"stratosgear","points":109,"comments":45,"rank":1}]
+```
 
 ## Testing
 The application is tested as part of the pre build process with Docker
@@ -32,3 +35,6 @@ The application is tested as part of the pre build process with Docker
 * The processFeedItem function isn't tested due to time constraints but would be looked at later.
 * Potentially caching the information or storing it somewhere, however this depends how often HN updates its page so might not be useful
 * There is also an official HN client so using that might be better than scraping, but for the purpose of the assignment the current implementation is fine.
+
+## Issues
+* I've noticed on the odd occasion that HN can block requests and I don't get anything back, so maybe something to retry if failed would fix this.
