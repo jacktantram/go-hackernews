@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	var posts = flag.Int("posts", 1, "how many posts to print on hackernews")
+	var posts = flag.Int("posts", 1, "how many posts to print from hackernews")
 	flag.Parse()
 	client := client.NewHNClient()
 	pp, err := client.GetTopStories(*posts)
