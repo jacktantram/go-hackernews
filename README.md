@@ -38,3 +38,8 @@ The application is tested as part of the pre build process with Docker
 
 ## Issues
 * I've noticed on the odd occasion that HN can block requests and I don't get anything back, so maybe something to retry if failed would fix this.
+
+##Choices
+* I have used dep to manage dependencies so that they are easily managed within the project.
+* For scraping I chose to use Colly because it provides a pretty clean API into creating a crawler, and it seemed pretty fast. This also uses GoQuery which is useful when traversing the DOM and using jQuery like functions. I used this for the next function to get the next row.
+* Additionally I used mockgen because it is useful when mocking interfaces, for example the client didn't really need to test the crawling part so by mocking it I am only  testing the clients functionality
