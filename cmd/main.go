@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/go-hackernews/client"
@@ -9,9 +8,8 @@ import (
 
 func main() {
 	client := client.NewHNClient()
-	pp, _ := client.GetTopStories(100)
+	pp, _ := client.GetTopStories(101)
 
-	_, _ = json.Marshal(pp)
-	fmt.Println(len(pp))
+	fmt.Println(fmt.Sprintf("%v", pp))
 
 }
