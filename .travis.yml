@@ -4,8 +4,9 @@ go:
   - 1.8.x
   - tip
 
+go_import_path: github.com/go-hackernews
+
 before_install:
-  - go get github.com/jacktantram/go-hackernews
   - go get -t -v ./...
 
 script:
