@@ -5,6 +5,7 @@ go:
   - tip
 
 before_install:
+  - go get github.com/jacktantram/go-hackernews
   - go get -t -v ./...
 
 script:
