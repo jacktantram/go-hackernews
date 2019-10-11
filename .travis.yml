@@ -9,10 +9,12 @@ go_import_path: github.com/go-hackernews
 before_install:
   - go get -t -v ./...
   - chmod +x ./go.test.sh
-  
+  - go get github.com/mattn/goveralls
 
 script:
   - ./go.test.sh
+  - $GOPATH/bin/goveralls -service=travis-ci
+  
   
 after_success:
   - bash <(curl -s https://codecov.io/bash)
